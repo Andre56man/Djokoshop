@@ -1,0 +1,74 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 style="margin: 2rem 0; font-weight: 300; font-size: 2rem;">Finaliser la commande</h1>
+    
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-container" style="max-width: 100%;">
+                    <div class="form-group">
+                        <label for="{{ form.shipping_address.id_for_label }}">Adresse de livraison</label>
+                        {{ form.shipping_address }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Téléphone</label>
+                        {{ form.phone }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.payment_method.id_for_label }}">Méthode de paiement</label>
+                        {{ form.payment_method }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.payment_reference.id_for_label }}">Référence de paiement (optionnel)</label>
+                        {{ form.payment_reference }}
+                        <small style="color: #666; font-size: 0.8rem;">Entrez votre numéro de transaction ou référence de paiement</small>
+                    </div>
+                    
+                    {% if form.errors %}
+                        <div style="background: #fee; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+                            <strong>Veuillez corriger les erreurs suivantes:</strong>
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ field.label }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Confirmer la commande</button>
+                </div>
+            </form>
+        </div>
+        
+        <div>
+            <div class="cart-total">
+                <h2>Détails de la commande</h2>
+                {% for item in cart_items %}
+                <div style="display: flex; justify-content: space-between; margin: 1rem 0; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                    <span>{{ item.product.name }} x {{ item.quantity }}</span>
+                    <span>{{ item.formatted_total }}</span>
+                </div>
+                {% endfor %}
+                <div style="display: flex; justify-content: space-between; margin: 1rem 0; padding-top: 1rem; border-top: 2px solid var(--primary-color); font-weight: 600;">
+                    <span>Total:</span>
+                    <span class="cart-total-price">{{ total|floatformat:0 }} FCFA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,32 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1 style="margin-bottom: 2rem; font-weight: 300; text-align: center;">Vérifier votre Email</h1>
+        
+        <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+            Un code de vérification a été envoyé à votre adresse email.<br>
+            Entrez le code ci-dessous pour confirmer votre compte.
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="code">Code de vérification</label>
+                <input type="text" name="code" id="code" placeholder="Entrez le code à 6 chiffres" maxlength="6" required style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Vérifier</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <p style="color: #666;">Vous n'avez pas reçu le code?</p>
+            <a href="{% url 'resend_verification_code' %}" class="btn btn-secondary">Renvoyer le code</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

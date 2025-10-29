@@ -1,0 +1,265 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .dashboard-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-card h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: #666;
+    }
+
+    .dashboard-card p {
+        margin: 1rem 0 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2d3436;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #2d3436;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
+    .badge-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .badge-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .badge-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .search-bar {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="container">
+    <h1 style="margin: 2rem 0; font-weight: 300; font-size: 2rem;">Tableau de Bord Administrateur</h1>
+    
+    <div class="dashboard">
+        <div class="dashboard-card">
+            <h3>Total Utilisateurs</h3>
+            <p>{{ total_users }}</p>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>Vendeurs</h3>
+            <p>{{ total_vendors }}</p>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>Total Produits</h3>
+            <p>{{ total_products }}</p>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>Total Commandes</h3>
+            <p>{{ total_orders }}</p>
+        </div>
+    </div>
+    
+    <!-- Section Gestion des Utilisateurs -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="margin-bottom: 1.5rem; font-weight: 300; font-size: 1.5rem;">Gestion des Utilisateurs</h2>
+        
+        <div class="search-bar">
+            <input type="text" id="userSearch" class="search-input" placeholder="Rechercher un utilisateur...">
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Date d'inscription</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.get_role_display }}</td>
+                        <td>
+                            {% if user.is_verified %}
+                                <span class="badge badge-success">Vérifié</span>
+                            {% else %}
+                                <span class="badge badge-warning">Non vérifié</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at|date:"d/m/Y" }}</td>
+                        <td class="actions">
+                            <a href="{% url 'admin_edit_user' user.id %}" class="btn btn-warning">Modifier</a>
+                            <form method="post" action="{% url 'admin_delete_user' user.id %}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Aucun utilisateur trouvé.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section Dernières Commandes -->
+    <div style="margin-top: 3rem;">
+        <h2 style="margin-bottom: 2rem; font-weight: 300; font-size: 1.5rem;">Dernières Commandes</h2>
+        
+        {% if recent_orders %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Client</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.formatted_total }}</td>
+                        <td>{{ order.get_status_display }}</td>
+                        <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>Aucune commande récente.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.getElementById('userSearch').addEventListener('keyup', function() {
+    const searchText = this.value.toLowerCase();
+    const rows = document.querySelectorAll('table tbody tr');
+    
+    rows.forEach(row => {
+        const username = row.cells[0].textContent.toLowerCase();
+        const email = row.cells[1].textContent.toLowerCase();
+        
+        if (username.includes(searchText) || email.includes(searchText)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,173 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 800px; margin: 2rem auto; background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;">
+        <!-- En-tête du formulaire -->
+        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 2rem; color: white; position: relative;">
+            <h1 style="font-size: 2rem; font-weight: 600; text-align: center; margin: 0;">
+                <i class="fas fa-plus-circle" style="margin-right: 10px;"></i>Nouveau Produit
+            </h1>
+            <p style="text-align: center; margin-top: 0.5rem; opacity: 0.9;">Ajoutez un nouveau produit à votre catalogue</p>
+        </div>
+
+        <!-- Formulaire -->
+        <div style="padding: 2rem;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Grid pour les champs du formulaire -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Colonne gauche -->
+                    <div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.name.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-tag" style="margin-right: 8px; color: #6366f1;"></i>Nom du produit
+                            </label>
+                            {{ form.name }}
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.price.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-money-bill-wave" style="margin-right: 8px; color: #6366f1;"></i>Prix (FCFA)
+                            </label>
+                            {{ form.price }}
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.category.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-folder" style="margin-right: 8px; color: #6366f1;"></i>Catégorie
+                            </label>
+                            {{ form.category }}
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.stock.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-boxes" style="margin-right: 8px; color: #6366f1;"></i>Stock
+                            </label>
+                            {{ form.stock }}
+                        </div>
+                    </div>
+
+                    <!-- Colonne droite -->
+                    <div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.description.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-align-left" style="margin-right: 8px; color: #6366f1;"></i>Description
+                            </label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.image.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-image" style="margin-right: 8px; color: #6366f1;"></i>Image du produit
+                            </label>
+                            {{ form.image }}
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                                Format recommandé : JPG, PNG. Taille max : 5 MB
+                            </p>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="{{ form.tags.id_for_label }}" style="display: block; color: #4b5563; margin-bottom: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-tags" style="margin-right: 8px; color: #6366f1;"></i>Étiquettes
+                            </label>
+                            {{ form.tags }}
+                            <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                                Séparez les étiquettes par des virgules
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <a href="{% url 'vendor_dashboard' %}" class="btn btn-secondary" style="text-align: center;">
+                        <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="text-align: center;">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>Enregistrer le produit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Styles spécifiques pour améliorer l'apparence des champs -->
+<style>
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: #f9fafb;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        background-color: #fff;
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-secondary {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        color: #4b5563;
+    }
+
+    .btn-secondary:hover {
+        background: #f9fafb;
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+
+    /* Animation pour le formulaire */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .container > div {
+        animation: slideIn 0.5s ease-out;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,99 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2d3436;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .form-check {
+        margin-top: 1rem;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <h2 style="margin-bottom: 2rem; font-weight: 300; font-size: 1.8rem;">Modifier l'Utilisateur</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                <div class="alert alert-danger">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="btn-container">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Annuler</a>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

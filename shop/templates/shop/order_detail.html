@@ -1,0 +1,53 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 style="margin: 2rem 0; font-weight: 300; font-size: 2rem;">Commande #{{ order.id }}</h1>
+    
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+        <div>
+            <div class="form-container" style="max-width: 100%;">
+                <h2 style="margin-bottom: 1rem;">Articles commandés</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Quantité</th>
+                            <th>Prix</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.price|floatformat:0 }} FCFA</td>
+                            <td>{{ item.formatted_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div>
+            <div class="cart-total">
+                <h2 style="margin-bottom: 1rem;">Informations de livraison</h2>
+                <p><strong>Adresse:</strong><br>{{ order.shipping_address }}</p>
+                <p><strong>Téléphone:</strong> {{ order.phone }}</p>
+                <p><strong>Statut:</strong> {{ order.get_status_display }}</p>
+                <p><strong>Date:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--primary-color);">
+                    <div style="font-size: 1.5rem; font-weight: 600;">
+                        Total: {{ order.formatted_total }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

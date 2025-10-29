@@ -1,0 +1,217 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container">
+    <div style="max-width: 800px; margin: 2rem auto;">
+        <!-- En-tête -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; font-weight: 300;">Notifications</h1>
+            {% if notifications %}
+            <button id="markAllRead" class="btn btn-secondary">
+                <i class="fas fa-check-double"></i> Tout marquer comme lu
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Liste des notifications -->
+        {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}" data-id="{{ notification.id }}">
+                <!-- Icône selon le type -->
+                <div class="notification-icon">
+                    {% if notification.type == 'order_status' %}
+                        <i class="fas fa-shopping-bag"></i>
+                    {% elif notification.type == 'new_order' %}
+                        <i class="fas fa-cart-plus"></i>
+                    {% elif notification.type == 'delivered_order' %}
+                        <i class="fas fa-truck"></i>
+                    {% elif notification.type == 'vendor_request' %}
+                        <i class="fas fa-store"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Contenu -->
+                <div class="notification-content">
+                    <p class="notification-message">{{ notification.message }}</p>
+                    <span class="notification-time">{{ notification.created_at|timesince }} ago</span>
+                </div>
+
+                <!-- Bouton marquer comme lu -->
+                {% if not notification.is_read %}
+                <button class="mark-read-btn" data-id="{{ notification.id }}">
+                    <i class="fas fa-check"></i>
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <p>Aucune notification pour le moment</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        gap: 1rem;
+        position: relative;
+    }
+
+    .notification-item.unread {
+        background: #f0f7ff;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6366f1;
+        font-size: 1.2rem;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-message {
+        margin: 0;
+        color: #1f2937;
+    }
+
+    .notification-time {
+        font-size: 0.85rem;
+        color: #6b7280;
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    .mark-read-btn {
+        background: none;
+        border: none;
+        color: #6366f1;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .mark-read-btn:hover {
+        background: #e0e7ff;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6b7280;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
+    .notification-item.removing {
+        animation: fadeOut 0.3s ease forwards;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Marquer une notification comme lue
+    document.querySelectorAll('.mark-read-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+            
+            fetch(`/notifications/mark-read/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    item.classList.add('removing');
+                    setTimeout(() => {
+                        item.classList.remove('unread');
+                        this.remove();
+                        item.classList.remove('removing');
+                        updateNotificationCount();
+                    }, 300);
+                }
+            });
+        });
+    });
+
+    // Marquer toutes les notifications comme lues
+    document.getElementById('markAllRead')?.addEventListener('click', function() {
+        fetch('/notifications/mark-all-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.add('removing');
+                    setTimeout(() => {
+                        item.classList.remove('unread');
+                        item.querySelector('.mark-read-btn')?.remove();
+                        item.classList.remove('removing');
+                    }, 300);
+                });
+                updateNotificationCount();
+            }
+        });
+    });
+
+    // Mettre à jour le compteur de notifications
+    function updateNotificationCount() {
+        const count = document.querySelectorAll('.notification-item.unread').length;
+        const badge = document.querySelector('.notifications-badge');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

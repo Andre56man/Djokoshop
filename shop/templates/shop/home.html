@@ -1,0 +1,106 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="animate fade-in-up">Nouvelle Collection 2025</h1>
+        <p class="hero-subtitle animate fade-in-up delay-1">Découvrez notre sélection exclusive</p>
+        <p class="promo-text animate fade-in-up delay-1">Jusqu'à -30% sur une sélection - Offre limitée</p>
+        <a href="{% url 'product_list' %}" class="hero-cta animate fade-in-up delay-2">Explorer la collection</a>
+    </div>
+</section>
+
+<div class="featured-categories">
+    <div class="container">
+        <h2 class="section-title animate fade-in-up">Catégories</h2>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <a href="{% url 'product_list' %}?category={{ category.id }}" class="category-card animate scale-in" style="animation-delay: {{ forloop.counter|add:"2" }}00ms">
+                <div class="category-icon">
+                    <i class="fas fa-{{ category.icon|default:'tag' }}"></i>
+                </div>
+                <h3>{{ category.name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="section-title animate fade-in-up">Produits Populaires</h2>
+    
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card animate fade-in-up" style="animation-delay: {{ forloop.counter|add:"2" }}00ms">
+            <div class="product-image-container">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <div class="product-image no-image">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+                <div class="product-overlay">
+                    <a href="{% url 'product_detail' product.pk %}" class="view-details">Voir détails</a>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-category">{{ product.category.name }}</div>
+                <div class="product-price">{{ product.formatted_price }}</div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>Aucun produit disponible pour le moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration de l'Intersection Observer
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.2
+    };
+
+    // Callback quand un élément devient visible
+    const handleIntersect = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                // Ne plus observer l'élément une fois animé
+                observer.unobserve(entry.target);
+            }
+        });
+    };
+
+    // Créer l'observer
+    const observer = new IntersectionObserver(handleIntersect, options);
+
+    // Observer tous les éléments avec la classe animate
+    document.querySelectorAll('.animate').forEach(element => {
+        element.style.opacity = '0';
+        observer.observe(element);
+    });
+
+    // Animation supplémentaire pour les cartes de produits
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
+

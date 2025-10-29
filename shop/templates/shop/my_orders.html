@@ -1,0 +1,41 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1 style="margin: 2rem 0; font-weight: 300; font-size: 2rem;">Mes Commandes</h1>
+    
+    {% if orders %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d/m/Y" }}</td>
+                    <td>{{ order.formatted_total }}</td>
+                    <td>{{ order.get_status_display }}</td>
+                    <td><a href="{% url 'order_detail' order.id %}" class="btn btn-secondary">Voir détails</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 4rem 0; background: var(--secondary-color); border: 1px solid var(--border-color);">
+        <h2 style="font-weight: 300; margin-bottom: 1rem;">Aucune commande</h2>
+        <p style="color: #666;">Vous n'avez pas encore passé de commande</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
