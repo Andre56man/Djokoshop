@@ -17,6 +17,18 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
     phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
+    # Preferences fields (keep in sync with migrations)
+    LANGUAGE_CHOICES = [
+        ('fr', 'Français'),
+        ('en', 'English'),
+    ]
+    language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default='fr')
+    THEME_CHOICES = [
+        ('dark', 'Sombre'),
+        ('light', 'Clair'),
+        ('mystery', 'Mystérieux'),
+    ]
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default='mystery')
     is_verified = models.BooleanField(default=False)
     verification_code = models.CharField(max_length=6, blank=True)
     verification_code_sent_at = models.DateTimeField(null=True, blank=True)
