@@ -592,100 +592,7 @@
         }
     </style>
 
-    <!-- FOOTER -->
-    <footer class="footer">
 
-    <!-- Scripts -->
-    <script>
-        // Menu mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            const navLinks = document.querySelector('.nav-links');
-            
-            if (mobileMenuBtn && navLinks) {
-                // Gestionnaire du menu mobile
-                mobileMenuBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navLinks.classList.toggle('active');
-                    const icon = this.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('fa-bars');
-                        icon.classList.toggle('fa-times');
-                    }
-                });
-
-                // Gestion des dropdowns sur mobile
-                const dropdowns = document.querySelectorAll('.dropdown');
-                dropdowns.forEach(dropdown => {
-                    const link = dropdown.querySelector('.dropbtn');
-                    if (link) {
-                        link.addEventListener('click', function(e) {
-                            if (window.innerWidth <= 768) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                dropdown.classList.toggle('active');
-                            }
-                        });
-                    }
-                });
-
-                // Fermer le menu quand on clique en dehors
-                document.addEventListener('click', function(e) {
-                    const isClickInside = navLinks.contains(e.target) || mobileMenuBtn.contains(e.target);
-                    if (!isClickInside && navLinks.classList.contains('active')) {
-                        navLinks.classList.remove('active');
-                        // Fermer tous les dropdowns
-                        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
-                        const icon = mobileMenuBtn.querySelector('i');
-                        if (icon) {
-                            icon.classList.add('fa-bars');
-                            icon.classList.remove('fa-times');
-                        }
-                    }
-                });
-
-                // Empêcher la fermeture du menu lors du clic sur les éléments du menu
-                navLinks.addEventListener('click', function(e) {
-                    if (e.target.tagName === 'A' && !e.target.classList.contains('dropbtn')) {
-                        navLinks.classList.remove('active');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        if (icon) {
-                            icon.classList.add('fa-bars');
-                            icon.classList.remove('fa-times');
-                        }
-                    }
-                });
-            }
-
-            // Animation au scroll
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('show');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-
-            document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
-        });
-
-        // Gestion des cookies
-        function checkCookieConsent() {
-            const consent = localStorage.getItem('cookieConsent');
-            if (consent === null) {
-                document.getElementById('cookie-consent').style.display = 'block';
-            }
-        }
-
-        function acceptCookies(accepted) {
-            localStorage.setItem('cookieConsent', accepted);
-            document.getElementById('cookie-consent').style.display = 'none';
-        }
-
-        window.addEventListener('load', checkCookieConsent);
-    </script>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -710,13 +617,12 @@
             <div class="footer-section">
                 <h4>Contact & Support</h4>
                 <p><i class="fas fa-envelope"></i> contact@djokoshop.com</p>
-                <p><i class="fas fa-phone"></i> +225 XX XX XX XX</p>
-                <p><i class="fas fa-clock"></i> Lun-Sam: 8h-20h</p>
-                <p><i class="fas fa-map-marker-alt"></i> Abidjan, Côte d'Ivoire</p>
+                <p><i class="fas fa-phone"></i> +225 2721212121</p>
+
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 DJOKO SHOP. Tous droits réservés. | Conçu avec <i class="fas fa-heart" style="color: #e74c3c;"></i> à Abidjan</p>
+            <p>&copy; 2024 DJOKO SHOP. Tous droits réservés. </p>
         </div>
     </footer>
 

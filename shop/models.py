@@ -7,7 +7,7 @@ from decimal import Decimal
 class User(AbstractUser):
     """Custom User Model"""
     ROLE_CHOICES = [
-        ('admin', 'Administrateur'),
+
         ('vendor', 'Vendeur'),
         ('customer', 'Client'),
     ]
